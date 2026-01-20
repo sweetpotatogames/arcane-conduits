@@ -129,3 +129,123 @@ tasks.register('generateVSCodeLaunch') {
         launchFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(launchConfig))
     }
 }
+
+// Task to deploy the plugin to Hytale's Mods folder
+tasks.register('deployPlugin', Copy) {
+    dependsOn 'build'
+    group = 'hytale'
+    description = 'Copies the plugin JAR to the Hytale Mods folder'
+
+    def modsDir = file("$hytaleHome/UserData/Mods")
+
+    from(tasks.jar) {
+        // Rename to just the plugin name (without version) for easier updates
+        rename { "${project.name}.jar" }
+    }
+    into modsDir
+
+    doFirst {
+        if (!modsDir.exists()) {
+            modsDir.mkdirs()
+        }
+        // Remove old versions of this plugin
+        modsDir.listFiles()?.findAll { it.name.startsWith("${project.name}") && it.name.endsWith('.jar') }?.each {
+            delete it
+        }
+    }
+
+    doLast {
+        println "Deployed ${project.name}.jar to ${modsDir.absolutePath}"
+    }
+}
+
+// Task to deploy with version number in filename
+tasks.register('deployPluginVersioned', Copy) {
+    dependsOn 'build'
+    group = 'hytale'
+    description = 'Copies the versioned plugin JAR to the Hytale Mods folder'
+
+    def modsDir = file("$hytaleHome/UserData/Mods")
+
+    from tasks.jar
+    into modsDir
+
+    doFirst {
+        if (!modsDir.exists()) {
+            modsDir.mkdirs()
+        }
+    }
+
+    doLast {
+        println "Deployed ${tasks.jar.archiveFileName.get()} to ${modsDir.absolutePath}"
+    }
+}
+
+// Task to run the Hytale server with this plugin loaded
+tasks.register('runServer', JavaExec) {
+    dependsOn 'build'
+    group = 'hytale'
+    description = 'Runs the Hytale server with this plugin loaded'
+
+    def serverJar = file("$hytaleHome/install/$patchline/package/game/latest/Server/HytaleServer.jar")
+    def assetsZip = file("$hytaleHome/install/$patchline/package/game/latest/Assets.zip")
+
+    classpath = files(serverJar)
+    mainClass = 'com.hypixel.hytale.Main'
+    workingDir = serverRunDir
+
+    // Build the mod paths
+    def modPaths = []
+    // Add this plugin's source directory (for hot reload during development)
+    modPaths << sourceSets.main.java.srcDirs.first().parentFile.absolutePath
+    // Optionally load user mods
+    if (load_user_mods.toBoolean()) {
+        modPaths << "$hytaleHome/UserData/Mods"
+    }
+
+    args = [
+        '--allow-op',
+        '--disable-sentry',
+        "--assets=${assetsZip.absolutePath}",
+        "--mods=${modPaths.join(',')}"
+    ]
+
+    // Enable standard input for console commands
+    standardInput = System.in
+
+    doFirst {
+        println "Starting Hytale Server..."
+        println "Working directory: ${serverRunDir.absolutePath}"
+        println "Loading mods from: ${modPaths.join(', ')}"
+    }
+}
+
+// Task to run server with deployed JAR (from Mods folder)
+tasks.register('runServerDeployed', JavaExec) {
+    dependsOn 'deployPlugin'
+    group = 'hytale'
+    description = 'Deploys the plugin and runs the Hytale server'
+
+    def serverJar = file("$hytaleHome/install/$patchline/package/game/latest/Server/HytaleServer.jar")
+    def assetsZip = file("$hytaleHome/install/$patchline/package/game/latest/Assets.zip")
+    def modsDir = file("$hytaleHome/UserData/Mods")
+
+    classpath = files(serverJar)
+    mainClass = 'com.hypixel.hytale.Main'
+    workingDir = serverRunDir
+
+    args = [
+        '--allow-op',
+        '--disable-sentry',
+        "--assets=${assetsZip.absolutePath}",
+        "--mods=${modsDir.absolutePath}"
+    ]
+
+    standardInput = System.in
+
+    doFirst {
+        println "Starting Hytale Server..."
+        println "Working directory: ${serverRunDir.absolutePath}"
+        println "Loading mods from: ${modsDir.absolutePath}"
+    }
+}
