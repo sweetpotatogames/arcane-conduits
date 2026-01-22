@@ -1,0 +1,11 @@
+{
+  "Cooldown": {
+    "Cooldown": 0.2,
+    "ClickBypass": true
+  },
+  "Interactions": [
+    {
+      "Type": "CTFSetupInteraction"
+    }
+  ]
+}
