@@ -97,7 +97,7 @@ idea.project.settings.runConfigurations {
     'HytaleServer'(org.jetbrains.gradle.ext.Application) {
         mainClass = 'com.hypixel.hytale.Main'
         moduleName = project.idea.module.name + '.main'
-        programParameters = createServerRunArguments("\$PROJECT_DIR\$/build/libs/${project.name}-${version}.jar")
+        programParameters = createServerRunArguments("\$PROJECT_DIR\$/build/libs/")
         workingDirectory = serverRunDir.absolutePath
     }
     // Remote debug configuration for attaching to a running server
@@ -118,7 +118,7 @@ tasks.register('generateVSCodeLaunch') {
             vscodeDir.mkdirs()
         }
         def debugPort = project.findProperty('debug_port') ?: '5005'
-        def programParams = createServerRunArguments("\${workspaceFolder}/build/libs/${project.name}-${version}.jar")
+        def programParams = createServerRunArguments("\${workspaceFolder}/build/libs/")
         def launchConfig = [
             version: "0.2.0",
             configurations: [
@@ -211,7 +211,7 @@ tasks.register('runServer', JavaExec) {
     workingDir = serverRunDir
 
     // Build the mod paths - use the built JAR
-    def modPaths = [pluginJar.absolutePath]
+    def modPaths = [pluginJar.parent]
     if (load_user_mods.toBoolean()) {
         modPaths << "$hytaleHome/UserData/Mods"
     }
@@ -259,7 +259,7 @@ tasks.register('runServerNoDebug', JavaExec) {
     workingDir = serverRunDir
 
     // Build the mod paths - use the built JAR
-    def modPaths = [pluginJar.absolutePath]
+    def modPaths = [pluginJar.parent]
     if (load_user_mods.toBoolean()) {
         modPaths << "$hytaleHome/UserData/Mods"
     }
