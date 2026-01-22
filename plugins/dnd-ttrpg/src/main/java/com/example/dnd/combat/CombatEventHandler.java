@@ -1,15 +1,19 @@
 package com.example.dnd.combat;
 
 import com.example.dnd.movement.GridMovementManager;
+import com.example.dnd.targeting.TargetManager;
+import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.MouseButtonState;
 import com.hypixel.hytale.protocol.MouseButtonType;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.Entity;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.event.events.player.PlayerMouseButtonEvent;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import java.util.UUID;
 
@@ -17,8 +21,12 @@ import java.util.UUID;
  * Handles player mouse actions during turn-based combat.
  *
  * During the MOVEMENT phase:
- * - Left-click: Select/update movement destination
+ * - Left-click on block: Select/update movement destination
+ * - Left-click on NPC: Select as target
  * - Right-click: Confirm and execute movement
+ *
+ * During the ACTION phase:
+ * - Left-click on NPC: Select as target
  *
  * Blocks actions when it's not the player's turn.
  */
@@ -26,10 +34,12 @@ public class CombatEventHandler {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
     private final TurnManager turnManager;
     private final GridMovementManager movementManager;
+    private final TargetManager targetManager;
 
     public CombatEventHandler(TurnManager turnManager) {
         this.turnManager = turnManager;
         this.movementManager = GridMovementManager.get();
+        this.targetManager = TargetManager.get();
     }
 
     /**
@@ -63,9 +73,47 @@ public class CombatEventHandler {
             return;
         }
 
-        // Handle movement phase clicks
-        if (combatState.getCurrentPhase() == TurnPhase.MOVEMENT) {
+        // Handle phase-specific clicks
+        TurnPhase currentPhase = combatState.getCurrentPhase();
+
+        if (currentPhase == TurnPhase.MOVEMENT) {
             handleMovementPhaseClick(event, world);
+        } else if (currentPhase == TurnPhase.ACTION) {
+            handleActionPhaseClick(event, world);
+        }
+    }
+
+    /**
+     * Handle mouse clicks during the action phase.
+     * Primary use: target selection for attacks/abilities.
+     */
+    private void handleActionPhaseClick(PlayerMouseButtonEvent event, World world) {
+        MouseButtonType buttonType = event.getMouseButton().mouseButtonType;
+        MouseButtonState buttonState = event.getMouseButton().state;
+
+        // Only process on button release
+        if (buttonState != MouseButtonState.Released) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+
+        // Left-click: Try to select entity as target
+        if (buttonType == MouseButtonType.Left) {
+            Ref<EntityStore> targetEntityRef = event.getTargetEntity();
+            if (targetEntityRef != null && targetEntityRef.isValid()) {
+                // Try to get the entity from the ref
+                Entity targetEntity = world.getComponentAccessor().getComponent(
+                    targetEntityRef, Entity.getComponentType());
+
+                if (targetEntity != null && targetManager.isValidTarget(targetEntity, world)) {
+                    event.setCancelled(true);
+                    targetManager.selectTarget(player, targetEntity, world);
+
+                    LOGGER.atFine().log("Target selection: Player %s clicked entity",
+                        player.getPlayerRef().getUsername());
+                }
+            }
         }
     }
 
@@ -82,28 +130,45 @@ public class CombatEventHandler {
         }
 
         Player player = event.getPlayer();
-        Vector3i targetBlock = event.getTargetBlock();
-
-        // Skip if no valid target block
-        if (targetBlock == null) {
-            return;
-        }
 
         if (buttonType == MouseButtonType.Left) {
-            // Left-click: Select/update destination
-            event.setCancelled(true);
-            movementManager.onBlockClicked(player, targetBlock, world);
+            // Check if clicking on an entity first (for targeting)
+            Ref<EntityStore> targetEntityRef = event.getTargetEntity();
+            if (targetEntityRef != null && targetEntityRef.isValid()) {
+                Entity targetEntity = world.getComponentAccessor().getComponent(
+                    targetEntityRef, Entity.getComponentType());
 
-            LOGGER.atFine().log("Movement click: Player %s selected block %s",
-                player.getPlayerRef().getUsername(), targetBlock);
+                if (targetEntity != null && targetManager.isValidTarget(targetEntity, world)) {
+                    // Clicked on a valid target - select it
+                    event.setCancelled(true);
+                    targetManager.selectTarget(player, targetEntity, world);
+
+                    LOGGER.atFine().log("Movement phase target: Player %s selected entity",
+                        player.getPlayerRef().getUsername());
+                    return;
+                }
+            }
+
+            // Otherwise, handle as movement destination
+            Vector3i targetBlock = event.getTargetBlock();
+            if (targetBlock != null) {
+                event.setCancelled(true);
+                movementManager.onBlockClicked(player, targetBlock, world);
+
+                LOGGER.atFine().log("Movement click: Player %s selected block %s",
+                    player.getPlayerRef().getUsername(), targetBlock);
+            }
 
         } else if (buttonType == MouseButtonType.Right) {
             // Right-click: Confirm movement
-            event.setCancelled(true);
-            movementManager.confirmMovement(player, world);
+            Vector3i targetBlock = event.getTargetBlock();
+            if (targetBlock != null) {
+                event.setCancelled(true);
+                movementManager.confirmMovement(player, world);
 
-            LOGGER.atFine().log("Movement confirm: Player %s confirmed movement",
-                player.getPlayerRef().getUsername());
+                LOGGER.atFine().log("Movement confirm: Player %s confirmed movement",
+                    player.getPlayerRef().getUsername());
+            }
         }
     }
 }

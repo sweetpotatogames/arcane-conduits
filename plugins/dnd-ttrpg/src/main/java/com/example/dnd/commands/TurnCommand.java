@@ -3,6 +3,7 @@ package com.example.dnd.commands;
 import com.example.dnd.combat.CombatState;
 import com.example.dnd.combat.TurnManager;
 import com.example.dnd.movement.GridMovementManager;
+import com.example.dnd.targeting.TargetManager;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;
@@ -110,6 +111,9 @@ public class TurnCommand extends AbstractPlayerCommand {
 
         // Hide all combat HUDs before ending combat
         turnManager.hideCombatHuds(world);
+
+        // Clear all target selections
+        TargetManager.get().clearAllTargets(world);
 
         combatState.endCombat();
         broadcastMessage(world, "[D&D] Combat ended!");

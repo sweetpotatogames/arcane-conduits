@@ -5,6 +5,8 @@ import com.example.dnd.combat.TurnManager;
 import com.example.dnd.combat.TurnPhase;
 import com.example.dnd.movement.GridMovementManager;
 import com.example.dnd.movement.MovementState;
+import com.example.dnd.targeting.TargetInfo;
+import com.example.dnd.targeting.TargetManager;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -70,6 +72,9 @@ public class CombatHud extends CustomUIHud {
 
         // Update movement display
         updateMovementDisplay(cmd, state, myUuid, isMyTurn);
+
+        // Update target display
+        updateTargetDisplay(cmd, myUuid);
     }
 
     /**
@@ -122,6 +127,45 @@ public class CombatHud extends CustomUIHud {
             cmd.set("#movementHint.Text", "Click a block to set destination");
             cmd.set("#movementHint.Visible", true);
         }
+    }
+
+    /**
+     * Update the target information display.
+     */
+    private void updateTargetDisplay(UICommandBuilder cmd, UUID myUuid) {
+        TargetManager targetManager = TargetManager.get();
+        TargetInfo targetInfo = targetManager.getTargetInfo(myUuid, world);
+
+        // Show/hide target panel based on whether we have a valid target
+        boolean hasTarget = targetInfo != null && targetInfo.isValid();
+        cmd.set("#targetPanel.Visible", hasTarget);
+
+        if (!hasTarget) {
+            return;
+        }
+
+        // Set target name
+        cmd.set("#targetName.Text", targetInfo.getName());
+
+        // Set HP text
+        String hpText = String.format("%.0f/%.0f", targetInfo.getCurrentHp(), targetInfo.getMaxHp());
+        cmd.set("#hpText.Text", hpText);
+
+        // Calculate HP bar width (max 118 pixels to fit within the 120px container with 1px borders)
+        float hpPercent = targetInfo.getHpPercent();
+        int barWidth = Math.max(1, (int) (118 * hpPercent));
+        cmd.set("#hpBarFill.Anchor.Width", barWidth);
+
+        // Set HP bar color based on percentage
+        String hpColor;
+        if (hpPercent > 0.5f) {
+            hpColor = "#44aa44"; // Green
+        } else if (hpPercent > 0.25f) {
+            hpColor = "#aaaa44"; // Yellow
+        } else {
+            hpColor = "#aa4444"; // Red
+        }
+        cmd.set("#hpBarFill.Background.Color", hpColor);
     }
 
     /**
