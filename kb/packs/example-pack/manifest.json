@@ -1,8 +1,0 @@
-{
-  "Name": "Example Pack",
-  "Group": "com.example",
-  "Version": "1.0.0",
-  "Description": "An example content pack for Hytale modding",
-  "Authors": ["Your Name"],
-  "ServerVersion": ">=1.0.0"
-}
