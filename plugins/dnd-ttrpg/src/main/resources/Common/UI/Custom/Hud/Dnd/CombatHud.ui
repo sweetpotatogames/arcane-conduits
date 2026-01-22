@@ -135,6 +135,39 @@ Group #CombatHudRoot {
         }
     }
 
+    // Movement panel (shown during movement phase)
+    Group #movementPanel {
+        Anchor: (Top: 5);
+        Background: (
+            Color: #2e1a2e,
+            Opacity: 0.9,
+            BorderColor: #8844aa,
+            BorderSize: 1
+        );
+        Padding: (Full: 8);
+        LayoutMode: Top;
+        Visible: false;
+
+        Label {
+            Text: "Movement Phase";
+            Style: (FontSize: 9, TextColor: #aa88cc);
+            Anchor: (Height: 14);
+        }
+
+        Label #movementLabel {
+            Text: "Movement: 6/6 blocks";
+            Style: (FontSize: 11, RenderBold: true, TextColor: #4caf50);
+            Anchor: (Height: 18);
+        }
+
+        Label #movementHint {
+            Text: "Click to select destination";
+            Style: (FontSize: 8, TextColor: #888888);
+            Anchor: (Height: 12);
+            Visible: true;
+        }
+    }
+
     // Help text
     Group #HelpPanel {
         Anchor: (Height: 20, Top: 5);

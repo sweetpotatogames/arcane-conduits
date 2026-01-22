@@ -126,6 +126,22 @@ public class CharacterSheet {
     public int getSpeed() { return speed; }
     public void setSpeed(int speed) { this.speed = speed; }
 
+    /**
+     * Get movement speed in Hytale blocks.
+     * Converts D&D feet to blocks (1 block = 5 feet).
+     */
+    public int getSpeedInBlocks() {
+        return speed / 5;
+    }
+
+    /**
+     * Set movement speed in Hytale blocks.
+     * Converts blocks to D&D feet (1 block = 5 feet).
+     */
+    public void setSpeedInBlocks(int blocks) {
+        this.speed = blocks * 5;
+    }
+
     // Proficiency management
     public boolean hasSkillProficiency(Skill skill) {
         return skillProficiencies.contains(skill);

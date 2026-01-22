@@ -20,5 +20,6 @@ public class DndCommands extends AbstractCommandCollection {
         addSubCommand(new RollCommand());
         addSubCommand(new SheetCommand(plugin));
         addSubCommand(new CombatCommand(plugin, turnManager));
+        addSubCommand(new MoveCommand(turnManager));
     }
 }

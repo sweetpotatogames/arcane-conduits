@@ -58,7 +58,7 @@ public class DndPlugin extends JavaPlugin {
         // Register event listeners for turn-based combat
         getEventRegistry().register(PlayerMouseButtonEvent.class, combatEventHandler::onPlayerMouseButton);
 
-        LOGGER.atInfo().log("[D&D] Commands registered: /dnd camera, /dnd initiative, /dnd turn, /dnd roll, /dnd sheet, /dnd combat");
+        LOGGER.atInfo().log("[D&D] Commands registered: /dnd camera, /dnd initiative, /dnd turn, /dnd roll, /dnd sheet, /dnd combat, /dnd move");
     }
 
     @Override

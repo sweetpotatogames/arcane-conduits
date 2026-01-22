@@ -2,6 +2,7 @@ package com.example.dnd.commands;
 
 import com.example.dnd.combat.CombatState;
 import com.example.dnd.combat.TurnManager;
+import com.example.dnd.movement.GridMovementManager;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;
@@ -15,6 +16,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
 /**
  * Command to control turn-based combat.
@@ -69,6 +71,9 @@ public class TurnCommand extends AbstractPlayerCommand {
 
         // Show combat HUDs for all combatants
         turnManager.showCombatHuds(world);
+
+        // Start movement phase for the first player
+        startMovementPhaseForCurrentPlayer(world, combatState);
     }
 
     private void handleNext(PlayerRef playerRef, World world, CombatState combatState) {
@@ -84,9 +89,15 @@ public class TurnCommand extends AbstractPlayerCommand {
             return;
         }
 
+        // End movement phase for current player
+        endMovementPhaseForCurrentPlayer(world, combatState);
+
         combatState.nextTurn();
         String message = String.format("[D&D] Next turn: %s", combatState.getCurrentPlayerName());
         broadcastMessage(world, message);
+
+        // Start movement phase for new current player
+        startMovementPhaseForCurrentPlayer(world, combatState);
 
         // Refresh all combat HUDs to show new turn
         turnManager.refreshAllHuds(world);
@@ -121,5 +132,43 @@ public class TurnCommand extends AbstractPlayerCommand {
         for (Player player : world.getPlayers()) {
             player.getPlayerRef().sendMessage(Message.raw(message));
         }
+    }
+
+    /**
+     * Start the movement phase for the current player in combat.
+     */
+    private void startMovementPhaseForCurrentPlayer(World world, CombatState combatState) {
+        UUID currentPlayerId = combatState.getCurrentPlayer();
+        if (currentPlayerId == null) return;
+
+        Player currentPlayer = findPlayerByUuid(world, currentPlayerId);
+        if (currentPlayer != null) {
+            GridMovementManager.get().startMovementPhase(currentPlayer, world);
+        }
+    }
+
+    /**
+     * End the movement phase for the current player in combat.
+     */
+    private void endMovementPhaseForCurrentPlayer(World world, CombatState combatState) {
+        UUID currentPlayerId = combatState.getCurrentPlayer();
+        if (currentPlayerId == null) return;
+
+        Player currentPlayer = findPlayerByUuid(world, currentPlayerId);
+        if (currentPlayer != null) {
+            GridMovementManager.get().endMovementPhase(currentPlayer);
+        }
+    }
+
+    /**
+     * Find a player in the world by UUID.
+     */
+    private Player findPlayerByUuid(World world, UUID playerId) {
+        for (Player player : world.getPlayers()) {
+            if (player.getPlayerRef().getUuid().equals(playerId)) {
+                return player;
+            }
+        }
+        return null;
     }
 }

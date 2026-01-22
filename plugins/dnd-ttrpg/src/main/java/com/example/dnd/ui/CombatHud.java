@@ -2,6 +2,9 @@ package com.example.dnd.ui;
 
 import com.example.dnd.combat.CombatState;
 import com.example.dnd.combat.TurnManager;
+import com.example.dnd.combat.TurnPhase;
+import com.example.dnd.movement.GridMovementManager;
+import com.example.dnd.movement.MovementState;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -64,6 +67,61 @@ public class CombatHud extends CustomUIHud {
 
         // Show round number if we want to track that
         cmd.set("#roundLabel.Text", "Combat Active");
+
+        // Update movement display
+        updateMovementDisplay(cmd, state, myUuid, isMyTurn);
+    }
+
+    /**
+     * Update the movement information display.
+     */
+    private void updateMovementDisplay(UICommandBuilder cmd, CombatState combatState, UUID myUuid, boolean isMyTurn) {
+        // Only show movement info during movement phase when it's player's turn
+        boolean showMovement = isMyTurn && combatState.getCurrentPhase() == TurnPhase.MOVEMENT;
+
+        cmd.set("#movementPanel.Visible", showMovement);
+
+        if (!showMovement) {
+            return;
+        }
+
+        MovementState moveState = GridMovementManager.get().getState(myUuid);
+        if (moveState == null) {
+            cmd.set("#movementLabel.Text", "Movement: --");
+            cmd.set("#movementHint.Visible", false);
+            return;
+        }
+
+        // Show movement remaining
+        int remaining = moveState.getRemainingMovement();
+        int total = moveState.getTotalMovement();
+        int planned = moveState.getPlannedDistance();
+
+        // Format: "Movement: 4/6 blocks (10ft planned)"
+        String movementText;
+        if (moveState.getPlannedDestination() != null) {
+            int afterMove = remaining - planned;
+            movementText = String.format("Movement: %d/%d blocks (%d planned)", afterMove, total, planned);
+        } else {
+            movementText = String.format("Movement: %d/%d blocks", remaining, total);
+        }
+        cmd.set("#movementLabel.Text", movementText);
+
+        // Set color based on whether path is valid
+        boolean canReach = moveState.canReachDestination();
+        String movementColor = canReach ? "#4caf50" : "#f44336"; // Green or red
+        cmd.set("#movementLabel.Style.TextColor", movementColor);
+
+        // Show hint text
+        if (moveState.getPlannedDestination() != null) {
+            cmd.set("#movementHint.Text", canReach
+                ? "Right-click to move, click elsewhere to change"
+                : "Too far! Select a closer destination");
+            cmd.set("#movementHint.Visible", true);
+        } else {
+            cmd.set("#movementHint.Text", "Click a block to set destination");
+            cmd.set("#movementHint.Visible", true);
+        }
     }
 
     /**
