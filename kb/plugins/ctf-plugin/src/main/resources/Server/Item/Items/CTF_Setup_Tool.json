@@ -1,0 +1,29 @@
+{
+  "TranslationProperties": {
+    "Name": "ctf.items.setup_tool.name",
+    "Description": "ctf.items.setup_tool.description"
+  },
+  "Icon": "Icons/Items/CTF/Setup_Tool.png",
+  "Quality": "Legendary",
+  "MaxStack": 1,
+  "PlayerAnimationsId": "Item",
+  "Tags": {
+    "Type": ["CTF_Tool", "Admin_Tool"]
+  },
+  "Categories": ["CTF", "Tools"],
+  "Weapon": {
+    "RenderDualWielded": false
+  },
+  "Droppable": false,
+  "Tradeable": false,
+  "Interactions": {
+    "Primary": "CTFSetupInteraction",
+    "Secondary": "CTFSetupCycleInteraction"
+  },
+  "InteractionConfig": {
+    "UseDistance": {
+      "Adventure": 200,
+      "Creative": 200
+    }
+  }
+}

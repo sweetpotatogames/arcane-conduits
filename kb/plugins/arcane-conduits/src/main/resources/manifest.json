@@ -1,0 +1,22 @@
+{
+    "Group": "ArcaneConduits",
+    "Name": "ArcaneConduits",
+    "Version": "0.1.0",
+    "Description": "A magical automation system featuring arcane conduits that carry power levels for resource processing, base defense, transportation, and farming.",
+    "Authors": [
+        {
+            "Name": "Sweet Potato Games"
+        }
+    ],
+    "Website": "https://github.com/sweetpotatogames",
+    "ServerVersion": "*",
+    "Dependencies": {
+        
+    },
+    "OptionalDependencies": {
+        
+    },
+    "DisabledByDefault": false,
+    "Main": "com.arcane.conduits.ArcaneConduitsPlugin",
+    "IncludesAssetPack": true
+}

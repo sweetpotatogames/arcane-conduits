@@ -1,0 +1,283 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "name": "Mana_Crystal_Core",
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "orientation": {
+                "w": 1.0,
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "shape": {
+                "type": "none"
+            },
+            "children": [
+                {
+                    "id": "base",
+                    "name": "Base",
+                    "position": {
+                        "x": 0.0,
+                        "y": -0.3,
+                        "z": 0.0
+                    },
+                    "orientation": {
+                        "w": 1.0,
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "shape": {
+                        "type": "box",
+                        "size": {
+                            "x": 0.5,
+                            "y": 0.2,
+                            "z": 0.5
+                        },
+                        "textureLayout": {
+                            "top": {
+                                "u": 0,
+                                "v": 8
+                            },
+                            "bottom": {
+                                "u": 0,
+                                "v": 8
+                            },
+                            "front": {
+                                "u": 0,
+                                "v": 8
+                            },
+                            "back": {
+                                "u": 0,
+                                "v": 8
+                            },
+                            "left": {
+                                "u": 0,
+                                "v": 8
+                            },
+                            "right": {
+                                "u": 0,
+                                "v": 8
+                            }
+                        },
+                        "shadingMode": "flat"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "crystal_main",
+                    "name": "CrystalMain",
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.1,
+                        "z": 0.0
+                    },
+                    "orientation": {
+                        "w": 0.9239,
+                        "x": 0.0,
+                        "y": 0.3827,
+                        "z": 0.0
+                    },
+                    "shape": {
+                        "type": "box",
+                        "size": {
+                            "x": 0.4,
+                            "y": 0.6,
+                            "z": 0.4
+                        },
+                        "textureLayout": {
+                            "top": {
+                                "u": 0,
+                                "v": 0
+                            },
+                            "bottom": {
+                                "u": 0,
+                                "v": 0
+                            },
+                            "front": {
+                                "u": 0,
+                                "v": 0
+                            },
+                            "back": {
+                                "u": 0,
+                                "v": 0
+                            },
+                            "left": {
+                                "u": 0,
+                                "v": 0
+                            },
+                            "right": {
+                                "u": 0,
+                                "v": 0
+                            }
+                        },
+                        "shadingMode": "smooth"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "crystal_spike_1",
+                    "name": "CrystalSpike1",
+                    "position": {
+                        "x": 0.2,
+                        "y": 0.0,
+                        "z": 0.2
+                    },
+                    "orientation": {
+                        "w": 0.9659,
+                        "x": 0.1830,
+                        "y": 0.0,
+                        "z": 0.1830
+                    },
+                    "shape": {
+                        "type": "box",
+                        "size": {
+                            "x": 0.15,
+                            "y": 0.4,
+                            "z": 0.15
+                        },
+                        "textureLayout": {
+                            "top": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "bottom": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "front": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "back": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "left": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "right": {
+                                "u": 4,
+                                "v": 0
+                            }
+                        },
+                        "shadingMode": "smooth"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "crystal_spike_2",
+                    "name": "CrystalSpike2",
+                    "position": {
+                        "x": -0.2,
+                        "y": -0.05,
+                        "z": 0.15
+                    },
+                    "orientation": {
+                        "w": 0.9659,
+                        "x": -0.1830,
+                        "y": 0.0,
+                        "z": 0.1830
+                    },
+                    "shape": {
+                        "type": "box",
+                        "size": {
+                            "x": 0.12,
+                            "y": 0.35,
+                            "z": 0.12
+                        },
+                        "textureLayout": {
+                            "top": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "bottom": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "front": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "back": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "left": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "right": {
+                                "u": 4,
+                                "v": 0
+                            }
+                        },
+                        "shadingMode": "smooth"
+                    },
+                    "children": []
+                },
+                {
+                    "id": "crystal_spike_3",
+                    "name": "CrystalSpike3",
+                    "position": {
+                        "x": 0.15,
+                        "y": -0.1,
+                        "z": -0.2
+                    },
+                    "orientation": {
+                        "w": 0.9659,
+                        "x": 0.1830,
+                        "y": 0.0,
+                        "z": -0.1830
+                    },
+                    "shape": {
+                        "type": "box",
+                        "size": {
+                            "x": 0.1,
+                            "y": 0.3,
+                            "z": 0.1
+                        },
+                        "textureLayout": {
+                            "top": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "bottom": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "front": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "back": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "left": {
+                                "u": 4,
+                                "v": 0
+                            },
+                            "right": {
+                                "u": 4,
+                                "v": 0
+                            }
+                        },
+                        "shadingMode": "smooth"
+                    },
+                    "children": []
+                }
+            ]
+        }
+    ],
+    "textureSize": {
+        "width": 16,
+        "height": 16
+    }
+}

@@ -1,0 +1,54 @@
+# Hytale Mod Knowledge Base - .gitignore
+# These directories contain extracted/decompiled content that users must generate locally
+
+# Decompiled server source code (extract with tools/scripts/decompile.ps1)
+tools/decompiled-server/
+
+# Extracted vanilla game assets (extract with tools/scripts/extract-assets.ps1)
+assets/vanilla/
+
+# Keep the decompiler JAR but ignore any temp files
+tools/*.log
+tools/*.tmp
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Build outputs
+build/
+out/
+target/
+bin/
+*.class
+*.jar
+!tools/vineflower-*.jar
+
+# Gradle
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temp/backup files
+*.bak
+*.swp
+*.swo
+*~
+nul
+
+# Plugin/pack build artifacts
+plugins/*/build/
+plugins/*/.gradle/
+packs/*/build/

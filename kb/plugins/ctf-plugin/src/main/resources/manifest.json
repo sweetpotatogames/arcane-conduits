@@ -1,0 +1,22 @@
+{
+    "Group": "CTF",
+    "Name": "CTFPlugin",
+    "Version": "1.0.0",
+    "Description": "Capture The Flag game mode with flag carrying mechanics",
+    "Authors": [
+        {
+            "Name": "Your Name"
+        }
+    ],
+    "Website": "example.org",
+    "ServerVersion": "*",
+    "Dependencies": {
+        
+    },
+    "OptionalDependencies": {
+        
+    },
+    "DisabledByDefault": false,
+    "Main": "com.example.ctf.CTFPlugin",
+    "IncludesAssetPack": true
+}
