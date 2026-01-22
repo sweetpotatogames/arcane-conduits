@@ -66,6 +66,9 @@ public class TurnCommand extends AbstractPlayerCommand {
         String message = String.format("[D&D] Combat started! First turn: %s",
             combatState.getCurrentPlayerName());
         broadcastMessage(world, message);
+
+        // Show combat HUDs for all combatants
+        turnManager.showCombatHuds(world);
     }
 
     private void handleNext(PlayerRef playerRef, World world, CombatState combatState) {
@@ -84,12 +87,18 @@ public class TurnCommand extends AbstractPlayerCommand {
         combatState.nextTurn();
         String message = String.format("[D&D] Next turn: %s", combatState.getCurrentPlayerName());
         broadcastMessage(world, message);
+
+        // Refresh all combat HUDs to show new turn
+        turnManager.refreshAllHuds(world);
     }
 
     private void handleEnd(World world, CombatState combatState) {
         if (!combatState.isCombatActive()) {
             return;
         }
+
+        // Hide all combat HUDs before ending combat
+        turnManager.hideCombatHuds(world);
 
         combatState.endCombat();
         broadcastMessage(world, "[D&D] Combat ended!");

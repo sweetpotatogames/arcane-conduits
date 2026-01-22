@@ -4,7 +4,8 @@ import com.example.dnd.DndPlugin;
 import com.example.dnd.character.Ability;
 import com.example.dnd.character.CharacterSheet;
 import com.example.dnd.character.DiceRoller;
-import com.example.dnd.character.Skill;
+import com.example.dnd.combat.CombatState;
+import com.example.dnd.combat.TurnManager;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -23,6 +24,7 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
 /**
  * Interactive character sheet UI page.
@@ -128,6 +130,43 @@ public class CharacterSheetPage extends InteractiveCustomUIPage<CharacterSheetPa
             new EventData().append("Action", "RollInitiative").append("Value", ""),
             false
         );
+
+        // ========== Combat Section ==========
+        World world = store.getExternalData().getWorld();
+        TurnManager turnManager = plugin.getTurnManager();
+        CombatState combatState = turnManager.getCombatState(world);
+        UUID myUuid = playerRef.getUuid();
+
+        // Set combat status
+        boolean combatActive = combatState.isCombatActive();
+        boolean isMyTurn = combatState.isPlayerTurn(myUuid);
+
+        cmd.set("#combatStatusLabel.Text", combatActive ? "Combat Active" : "No Combat");
+        cmd.set("#combatStatusLabel.Style.TextColor", combatActive ? "#4caf50" : "#888888");
+
+        if (combatActive) {
+            String currentPlayer = combatState.getCurrentPlayerName();
+            cmd.set("#turnStatusLabel.Text", isMyTurn ? "Your turn!" : "Current: " + currentPlayer);
+            cmd.set("#turnStatusLabel.Style.TextColor", isMyTurn ? "#4caf50" : "#ffeb3b");
+        } else {
+            cmd.set("#turnStatusLabel.Text", "");
+        }
+
+        // Bind End Turn button
+        events.addEventBinding(
+            CustomUIEventBindingType.Activating,
+            "#endTurnBtn",
+            new EventData().append("Action", "EndTurn").append("Value", ""),
+            false
+        );
+
+        // Bind Open Combat Panel button
+        events.addEventBinding(
+            CustomUIEventBindingType.Activating,
+            "#openCombatBtn",
+            new EventData().append("Action", "OpenCombat").append("Value", ""),
+            false
+        );
     }
 
     @Override
@@ -167,15 +206,65 @@ public class CharacterSheetPage extends InteractiveCustomUIPage<CharacterSheetPa
                 sheet.setCurrentHp(sheet.getCurrentHp() + delta);
                 cmd.set("#CurrentHp.Text", String.valueOf(sheet.getCurrentHp()));
             }
+            case "EndTurn" -> {
+                handleEndTurn(world, cmd);
+            }
+            case "OpenCombat" -> {
+                handleOpenCombat(ref, store);
+            }
         }
 
         sendUpdate(cmd, null, false);
+    }
+
+    private void handleEndTurn(World world, UICommandBuilder cmd) {
+        TurnManager turnManager = plugin.getTurnManager();
+        CombatState combatState = turnManager.getCombatState(world);
+
+        if (!combatState.isCombatActive()) {
+            playerRef.sendMessage(Message.raw("[D&D] No active combat!"));
+            return;
+        }
+
+        if (!combatState.isPlayerTurn(playerRef.getUuid())) {
+            playerRef.sendMessage(Message.raw("[D&D] It's not your turn!"));
+            return;
+        }
+
+        combatState.nextTurn();
+        String message = String.format("[D&D] Turn ended. Next: %s", combatState.getCurrentPlayerName());
+        broadcastMessage(world, message);
+
+        // Refresh all combat HUDs
+        turnManager.refreshAllHuds(world);
+
+        // Update combat status in this UI
+        boolean isMyTurn = combatState.isPlayerTurn(playerRef.getUuid());
+        String currentPlayer = combatState.getCurrentPlayerName();
+        cmd.set("#turnStatusLabel.Text", isMyTurn ? "Your turn!" : "Current: " + currentPlayer);
+        cmd.set("#turnStatusLabel.Style.TextColor", isMyTurn ? "#4caf50" : "#ffeb3b");
+    }
+
+    private void handleOpenCombat(Ref<EntityStore> ref, Store<EntityStore> store) {
+        Player player = store.getComponent(ref, Player.getComponentType());
+        if (player != null) {
+            World world = store.getExternalData().getWorld();
+            TurnManager turnManager = plugin.getTurnManager();
+            CombatControlPage combatPage = new CombatControlPage(playerRef, turnManager, plugin, world);
+            player.getPageManager().openCustomPage(ref, store, combatPage);
+        }
     }
 
     private void broadcastRoll(World world, String rollType, DiceRoller.DiceResult result) {
         String message = String.format("[D&D] %s rolled %s: %s",
             playerRef.getUsername(), rollType, result.format());
 
+        for (Player player : world.getPlayers()) {
+            player.getPlayerRef().sendMessage(Message.raw(message));
+        }
+    }
+
+    private void broadcastMessage(World world, String message) {
         for (Player player : world.getPlayers()) {
             player.getPlayerRef().sendMessage(Message.raw(message));
         }

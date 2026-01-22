@@ -1,0 +1,153 @@
+// Combat HUD - Persistent turn order overlay
+// Displays in top-right corner during active combat
+
+$C = "../../../../../Common.ui";
+
+Group #CombatHudRoot {
+    Anchor: (Right: 10, Top: 100, Width: 200);
+    LayoutMode: Top;
+
+    // Header panel with combat title
+    Group #HeaderPanel {
+        Anchor: (Height: 30);
+        Background: (
+            Color: #1a1a2e,
+            Opacity: 0.85,
+            BorderColor: #ccb588,
+            BorderSize: 1
+        );
+        Padding: (Full: 5);
+
+        Label #roundLabel {
+            Text: "Combat Active";
+            Style: (FontSize: 11, RenderBold: true, TextColor: #ccb588, TextAlign: Center);
+            Anchor: (Width: 190);
+        }
+    }
+
+    // Current turn display
+    Group #CurrentTurnPanel {
+        Anchor: (Height: 50, Top: 2);
+        Background: (
+            Color: #2a2a4e,
+            Opacity: 0.9,
+            BorderColor: #4a4a6e,
+            BorderSize: 1
+        );
+        Padding: (Full: 8);
+        LayoutMode: Top;
+
+        Label {
+            Text: "Current Turn";
+            Style: (FontSize: 9, TextColor: #888888);
+            Anchor: (Height: 12);
+        }
+
+        Label #currentTurnName {
+            Text: "PlayerName";
+            Style: (FontSize: 14, RenderBold: true, TextColor: #ffffff);
+            Anchor: (Height: 20);
+        }
+    }
+
+    // Turn prompt (Your turn! or Waiting for...)
+    Group #PromptPanel {
+        Anchor: (Height: 25, Top: 2);
+        Background: (
+            Color: #1a1a2e,
+            Opacity: 0.85
+        );
+        Padding: (Full: 5);
+
+        Label #turnPrompt {
+            Text: "Your turn!";
+            Style: (FontSize: 11, TextColor: #4caf50, TextAlign: Center);
+            Anchor: (Width: 190);
+        }
+    }
+
+    // Initiative order list
+    Group #InitiativePanel {
+        Anchor: (Top: 5);
+        Background: (
+            Color: #1a1a2e,
+            Opacity: 0.8,
+            BorderColor: #3a3a5e,
+            BorderSize: 1
+        );
+        Padding: (Full: 8);
+        LayoutMode: Top;
+
+        Label {
+            Text: "Initiative Order";
+            Style: (FontSize: 9, TextColor: #888888);
+            Anchor: (Height: 14, Bottom: 5);
+        }
+
+        // Initiative slots (up to 8 players)
+        Label #initSlot0 {
+            Text: "1. Player (20)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+        Label #initSlot1 {
+            Text: "2. Player (18)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+        Label #initSlot2 {
+            Text: "3. Player (15)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+        Label #initSlot3 {
+            Text: "4. Player (12)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+        Label #initSlot4 {
+            Text: "5. Player (10)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+        Label #initSlot5 {
+            Text: "6. Player (8)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+        Label #initSlot6 {
+            Text: "7. Player (5)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+        Label #initSlot7 {
+            Text: "8. Player (3)";
+            Style: (FontSize: 10, TextColor: #cccccc);
+            Anchor: (Height: 16);
+            Visible: false;
+        }
+    }
+
+    // Help text
+    Group #HelpPanel {
+        Anchor: (Height: 20, Top: 5);
+        Background: (
+            Color: #1a1a2e,
+            Opacity: 0.6
+        );
+        Padding: (Full: 3);
+
+        Label {
+            Text: "/dnd combat for controls";
+            Style: (FontSize: 8, TextColor: #666666, TextAlign: Center);
+            Anchor: (Width: 190);
+        }
+    }
+}
